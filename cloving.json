@@ -1,0 +1,16 @@
+{
+  "languages": [
+    {
+      "name": "Shell Script",
+      "primary": true,
+      "directory": ".",
+      "extension": ".sh"
+    }
+  ],
+  "frameworks": [],
+  "testingFrameworks": [],
+  "buildTools": [],
+  "packageManager": "None",
+  "linters": [],
+  "projectType": "Command-line tool"
+}
