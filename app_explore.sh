@@ -19,9 +19,9 @@ if [ -z "$OPENAI_API_KEY" ]; then
 fi
 
 # Prompt for OpenAI model (default gpt-4)
-read -p "Enter the model you want to use (default: o1): " MODEL_INPUT
+read -p "Enter the model you want to use (default: chatgpt-4o-latest): " MODEL_INPUT
 if [ -z "$MODEL_INPUT" ]; then
-  MODEL_INPUT="o1"
+  MODEL_INPUT="chatgpt-4o-latest"
 fi
 export OPENAI_MODEL="$MODEL_INPUT"
 

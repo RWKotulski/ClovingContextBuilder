@@ -53,6 +53,9 @@ RESPONSE=$(curl -sS https://api.openai.com/v1/chat/completions \
      }'
   )")
 
+# Check if the response contains an error
+echo "$RESPONSE" >&2
+
 # Extract the generated summary from the response
 SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
 
