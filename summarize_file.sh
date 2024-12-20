@@ -1,3 +1,4 @@
+#summarize_file.sh
 #!/usr/bin/env bash
 
 # This script sends the contents of a given file to the OpenAI API and asks for a short summary

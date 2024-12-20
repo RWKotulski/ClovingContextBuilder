@@ -1,3 +1,4 @@
+#generate_summary.sh
 #!/usr/bin/env bash
 
 # This script scans the Rails application's common directories to identify models,
