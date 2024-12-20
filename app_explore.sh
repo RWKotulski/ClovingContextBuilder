@@ -28,8 +28,8 @@ export OPENAI_MODEL="$MODEL_INPUT"
 echo "Using model: $OPENAI_MODEL"
 
 # Confirm that required scripts are present
-if [ ! -f "summarize_app.sh" ] || [ ! -f "summarize_file.sh" ] || [ ! -f "orchestrate_summaries_in_json.sh" ]; then
-  echo "Error: One or more required scripts (summarize_app.sh, summarize_file.sh, orchestrate_summaries_in_json.sh) are missing."
+if [ ! -f "generate_summary.sh" ] || [ ! -f "summarize_file.sh" ] || [ ! -f "orchestrate_summaries_in_json.sh" ]; then
+  echo "Error: One or more required scripts (generate_summary.sh, summarize_file.sh, orchestrate_summaries_in_json.sh) are missing."
   exit 1
 fi
 

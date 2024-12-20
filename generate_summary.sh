@@ -1,5 +1,3 @@
-# generate_summary.sh
-
 #!/usr/bin/env bash
 
 # This script scans the Rails application's common directories to identify models,
@@ -33,31 +31,62 @@ extract_description() {
   echo "$doc"
 }
 
-# Function to process a given directory and file type
+# Function to process ruby files in a given directory and append to ALL_ITEMS
 process_directory() {
   local dir_path="$1"
   local file_type="$2"
 
+  # Find all .rb files and iterate
   find "$dir_path" -type f -name "*.rb" | sort | while read -r file; do
     [ -f "$file" ] || continue
     local desc
     desc=$(extract_description "$file")
+    local absolute_path
+    absolute_path=$(cd "$(dirname "$file")" && pwd)/$(basename "$file")
     local relative_path
-    relative_path=$(realpath --relative-to="$BASE_DIR" "$file")
+    relative_path="${absolute_path#$BASE_DIR/}"
 
-    echo "    {"
-    echo "      \"path\": \"${relative_path}\","
-    echo "      \"type\": \"${file_type}\","
-    echo "      \"description\": \"${desc}\""
-    echo "    },"
+    # Add a comma if ALL_ITEMS is not empty
+    if [ -n "$ALL_ITEMS" ]; then
+      ALL_ITEMS="${ALL_ITEMS},"
+    fi
+
+    ALL_ITEMS="${ALL_ITEMS}
+    {
+      \"path\": \"${relative_path}\",
+      \"type\": \"${file_type}\",
+      \"description\": \"${desc}\"
+    }"
   done
 }
 
-# Function that generates the summary and prints to stdout
-generate_summary() {
-  echo "{"
-  echo "  \"files\": ["
+# Function to process view files and append to ALL_ITEMS
+process_views() {
+  find "app/views" -type f \( -name "*.erb" -o -name "*.haml" -o -name "*.html" \) | sort | while read -r file; do
+    local absolute_path
+    absolute_path=$(cd "$(dirname "$file")" && pwd)/$(basename "$file")
+    local relative_path
+    relative_path="${absolute_path#$BASE_DIR/}"
 
+    # Add a comma if ALL_ITEMS is not empty
+    if [ -n "$ALL_ITEMS" ]; then
+      ALL_ITEMS="${ALL_ITEMS},"
+    fi
+
+    ALL_ITEMS="${ALL_ITEMS}
+    {
+      \"path\": \"${relative_path}\",
+      \"type\": \"view\",
+      \"description\": \"View template for rendering UI.\"
+    }"
+  done
+}
+
+# Function that generates the summary and prints to stdout without trailing commas
+generate_summary() {
+  ALL_ITEMS=""
+
+  # Process directories
   if [ -d "app/models" ]; then
     process_directory "app/models" "model"
   fi
@@ -71,21 +100,18 @@ generate_summary() {
   fi
 
   if [ -d "app/views" ]; then
-    find "app/views" -type f \( -name "*.erb" -o -name "*.haml" -o -name "*.html" \) | sort | while read -r file; do
-      local relative_path
-      relative_path=$(realpath --relative-to="$BASE_DIR" "$file")
-      echo "    {"
-      echo "      \"path\": \"${relative_path}\","
-      echo "      \"type\": \"view\","
-      echo "      \"description\": \"View template for rendering UI.\""
-      echo "    },"
-    done
+    process_views
   fi
 
-  # Close the JSON array and object
-  # We'll remove the trailing comma from the last entry in the array
+  # Print the final JSON
+  echo "{"
+  echo "  \"files\": ["
+  # Print ALL_ITEMS indented by two spaces
+  if [ -n "$ALL_ITEMS" ]; then
+    echo "$ALL_ITEMS" | sed 's/^    //'
+  fi
   echo "  ]"
-  echo "}" | sed '$!N; s/},\n  ]/}\n  ]/'
+  echo "}" | jq .
 }
 
 # Generate the summary and save to the output file

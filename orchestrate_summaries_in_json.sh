@@ -5,10 +5,10 @@
 set -e
 
 # Run the initial summary to get app_summary.json
-bash summarize_app.sh
+bash generate_summary.sh
 
 if [ ! -f "app_summary.json" ]; then
-  echo "Error: app_summary.json not found. Ensure summarize_app.sh ran successfully."
+  echo "Error: app_summary.json not found. Ensure generate_summary.sh ran successfully."
   exit 1
 fi
 
@@ -45,6 +45,6 @@ for FILE in $FILE_PATHS; do
 done
 
 # Save the updated JSON back to app_summary.json
-echo "$UPDATED_JSON" > app_summary.json
+echo "$UPDATED_JSON" | jq . > app_summary.json
 
 echo "app_summary.json has been updated with detailed summaries."
